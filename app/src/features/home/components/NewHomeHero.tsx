@@ -32,9 +32,9 @@ export function NewHomeHero(): ReactElement {
         {/* Hero Title with Sparkles */}
         {}
         <h1 className="relative z-20 whitespace-nowrap text-center font-bold text-2xl text-foreground md:text-5xl lg:text-6xl">
-          Build{" "}
+          Cogni{" "}
           <span className="relative inline-block text-gradient-accent">
-            community-owned
+            Brother
             {/* Sparkles Effect Container */}
             <div className="absolute top-full left-0 h-28 w-full md:h-40">
               {/* Gradients */}
@@ -85,7 +85,7 @@ export function NewHomeHero(): ReactElement {
               <div className="absolute inset-0 h-full w-full bg-background [mask-image:radial-gradient(250px_100px_at_top,transparent_20%,white)] md:[mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]" />
             </div>
           </span>{" "}
-          AI apps.
+          node.
         </h1>
 
         {/* Content Below Sparkles */}
@@ -111,19 +111,20 @@ export function NewHomeHero(): ReactElement {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="https://github.com/cogni-dao/cogni">
+                <Link href="https://github.com/cogni-test-org/brother">
                   <Github className="mr-2 size-4" />
-                  Start your own
+                  View the node
                 </Link>
               </Button>
               <Button size="lg" onClick={handleTryDemo}>
-                Try the demo
+                Enter chat
                 <ArrowRight className="ml-2 size-4" />
               </Button>
             </div>
 
             <p className="mt-8 max-w-3xl text-lg text-muted-foreground sm:text-xl">
-              Web3 Gov + Web2 AI
+              Coordinated AI work, shared knowledge, and review workflows for a
+              launched Cogni node.
             </p>
           </div>
         </div>
