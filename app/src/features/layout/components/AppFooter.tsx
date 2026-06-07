@@ -11,7 +11,7 @@
  * @public
  */
 
-import Image from "next/image";
+import { Handshake } from "lucide-react";
 import Link from "next/link";
 import type { ReactElement } from "react";
 
@@ -26,16 +26,16 @@ export function AppFooter(): ReactElement {
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/TransparentBrainOnly.png"
-                alt="Cogni"
-                width={24}
-                height={24}
+              <Handshake
+                aria-hidden="true"
+                className="size-6 shrink-0 text-primary"
               />
-              <span className="font-bold text-gradient-accent">Cogni</span>
+              <span className="font-bold text-gradient-accent">
+                cogni/brother
+              </span>
             </Link>
             <p className="mt-3 text-muted-foreground text-sm">
-              Web3 Gov + Web2 AI
+              A brother node for coordinated AI work, knowledge, and review.
             </p>
           </div>
 
@@ -76,7 +76,7 @@ export function AppFooter(): ReactElement {
       <div className="border-t">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-5 sm:px-6">
           <p className="text-muted-foreground text-xs">
-            &copy; {new Date().getFullYear()} Cogni DAO
+            &copy; {new Date().getFullYear()} Cogni Brother
           </p>
           <div className="flex items-center gap-5">
             {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
