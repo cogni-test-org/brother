@@ -22,6 +22,8 @@
 import type {
   ContributionRecord,
   DomainRow,
+  DomainsListResponse,
+  KnowledgeListResponse,
   KnowledgeRow,
 } from "@cogni/node-contracts";
 import {
@@ -31,6 +33,7 @@ import {
 import { DataGridColumnVisibility } from "@cogni/node-ui-kit/reui/data-grid/data-grid-column-visibility";
 import { DataGridPagination } from "@cogni/node-ui-kit/reui/data-grid/data-grid-pagination";
 import { DataGridTable } from "@cogni/node-ui-kit/reui/data-grid/data-grid-table";
+import { Skeleton } from "@cogni/node-ui-kit/shadcn/skeleton";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   type ColumnFiltersState,
@@ -61,6 +64,7 @@ import { Button, Input } from "@/components";
 import { closeContribution } from "./_api/closeContribution";
 import { fetchContributions } from "./_api/fetchContributions";
 import { fetchDomains } from "./_api/fetchDomains";
+import type { KnowledgeGraphResponse } from "./_api/fetchGraph";
 import { fetchKnowledge } from "./_api/fetchKnowledge";
 import { mergeContribution } from "./_api/mergeContribution";
 import { AddDomainSheet } from "./_components/AddDomainSheet";
@@ -90,7 +94,24 @@ function isMode(v: string | null): v is ViewMode {
   );
 }
 
-export function KnowledgeDashboardView() {
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Contribution action failed.";
+}
+
+interface KnowledgeDashboardViewProps {
+  /** SSR-seeded browse list — makes the entry count correct on first paint. */
+  readonly initialList?: KnowledgeListResponse | undefined;
+  /** SSR-seeded domain registry. */
+  readonly initialDomains?: DomainsListResponse | undefined;
+  /** SSR-seeded graph — only present on a `?mode=graph` deep-link. */
+  readonly initialGraph?: KnowledgeGraphResponse | undefined;
+}
+
+export function KnowledgeDashboardView({
+  initialList,
+  initialDomains,
+  initialGraph,
+}: KnowledgeDashboardViewProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -116,12 +137,14 @@ export function KnowledgeDashboardView() {
     queryKey: ["knowledge", "list"],
     queryFn: fetchKnowledge,
     staleTime: 30_000,
+    initialData: initialList,
   });
 
   const domainsQuery = useQuery({
     queryKey: ["knowledge", "domains"],
     queryFn: fetchDomains,
     staleTime: 30_000,
+    initialData: initialDomains,
   });
 
   const contributionsQuery = useQuery({
@@ -132,11 +155,22 @@ export function KnowledgeDashboardView() {
 
   const openCount = contributionsQuery.data?.contributions.length ?? 0;
 
+  // A failed merge used to be swallowed — the button flipped back with zero
+  // feedback and the contribution stayed open (bug.5120). Surface it INLINE on
+  // the failed row (which id + why), not as a detached page banner, so the
+  // reviewer can hand a fix off to the authoring AI agent right there.
+  const [mergeError, setMergeError] = useState<{
+    id: string;
+    reason: string;
+  } | null>(null);
+
   const mergeMutation = useMutation({
     mutationFn: (id: string) => mergeContribution(id),
+    onMutate: () => setMergeError(null),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["knowledge"] });
     },
+    onError: (error, id) => setMergeError({ id, reason: errorMessage(error) }),
   });
 
   const closeMutation = useMutation({
@@ -158,8 +192,14 @@ export function KnowledgeDashboardView() {
           </h1>
           <span className="text-muted-foreground text-xs">
             What this node has learned ·{" "}
-            {knowledgeQuery.data?.items.length ?? 0} entries on{" "}
-            <code className="font-mono">main</code>
+            {knowledgeQuery.data ? (
+              <>
+                {knowledgeQuery.data.items.length} entries on{" "}
+                <code className="font-mono">main</code>
+              </>
+            ) : (
+              <Skeleton className="inline-block h-3 w-28 align-middle" />
+            )}
           </span>
         </div>
 
@@ -229,7 +269,12 @@ export function KnowledgeDashboardView() {
           mode="chains"
         />
       )}
-      {mode === "graph" && <GraphView rows={knowledgeQuery.data?.items ?? []} />}
+      {mode === "graph" && (
+        <GraphView
+          rows={knowledgeQuery.data?.items ?? []}
+          initialData={initialGraph}
+        />
+      )}
       {mode === "domains" && (
         <DomainsPanel
           rows={domainsQuery.data?.domains ?? []}
@@ -243,6 +288,8 @@ export function KnowledgeDashboardView() {
           rows={contributionsQuery.data?.contributions ?? []}
           isLoading={contributionsQuery.isLoading}
           error={contributionsQuery.error}
+          mergeErrorId={mergeError?.id ?? null}
+          mergeErrorReason={mergeError?.reason ?? null}
           busyId={
             mergeMutation.isPending ? (mergeMutation.variables ?? null) : null
           }
@@ -424,6 +471,8 @@ function InboxPanel({
   error,
   busyId,
   rejectBusyId,
+  mergeErrorId,
+  mergeErrorReason,
   onMerge,
   onReject,
 }: {
@@ -432,6 +481,8 @@ function InboxPanel({
   readonly error: unknown;
   readonly busyId: string | null;
   readonly rejectBusyId: string | null;
+  readonly mergeErrorId: string | null;
+  readonly mergeErrorReason: string | null;
   readonly onMerge: (row: ContributionRecord) => void;
   readonly onReject: (id: string, reason: string) => void;
 }) {
@@ -449,8 +500,10 @@ function InboxPanel({
         onMerge,
         onReject: (r) => setSelected(r),
         busyId,
+        mergeErrorId,
+        mergeErrorReason,
       }),
-    [onMerge, busyId]
+    [onMerge, busyId, mergeErrorId, mergeErrorReason]
   );
 
   const table = useReactTable({

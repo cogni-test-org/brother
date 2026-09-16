@@ -129,6 +129,10 @@ export type {
   AttributionStatementLineRecord,
   AttributionStatementSignature,
   AttributionStore,
+  AppendSettlementRevisionParams,
+  AppendSettlementRevisionResult,
+  ClaimantLiabilityLifecycleRecord,
+  ClaimantLiabilityRecord,
   ClaimantStore,
   CloseIngestionWithEvaluationsParams,
   CursorStore,
@@ -161,6 +165,9 @@ export type {
   ReceiptClaimantsRecord,
   ReceiptStore,
   ReviewSubjectOverrideRecord,
+  SettlementLeafRecord,
+  SettlementRevisionRecord,
+  SettlementStore,
   SelectedReceiptWithMetadata,
   SelectionReader,
   SelectionStore,
@@ -174,6 +181,15 @@ export type {
   UpsertSelectionParams,
 } from "./store";
 export { toReviewSubjectOverrides } from "./store";
+
+// Settlement lifecycle read model
+export {
+  type DeriveSettlementLifecycleParams,
+  deriveSettlementLifecycle,
+  type EpochSettlementLifecycle,
+  type PublicationEvidence,
+  type SettlementLifecycle,
+} from "./settlement-lifecycle";
 
 // Validated store wrapper
 export { createValidatedAttributionStore } from "./validated-store";

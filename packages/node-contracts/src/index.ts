@@ -47,6 +47,7 @@ export * from "./attribution.receipts.internal.v1.contract";
 export * from "./attribution.record-pool-component.v1.contract";
 export * from "./attribution.review-epoch.v1.contract";
 export * from "./attribution.review-subject-overrides.v1.contract";
+export * from "./attribution.settlement-lifecycle.v1.contract";
 export * from "./attribution.sign-data.v1.contract";
 export * from "./attribution.sign-data.v2.contract";
 // ── Billing ─────────────────────────────────────────────────────────────────
@@ -63,6 +64,7 @@ export * from "./grants.validate.internal.v1.contract";
 export * from "./graph-runs.create.internal.v1.contract";
 export * from "./graph-runs.update.internal.v1.contract";
 export * from "./graphs.run.internal.v1.contract";
+export * from "./identity.attestation.v1.contract";
 // ── HTTP (ts-rest router + OpenAPI) ─────────────────────────────────────────
 export * from "./http/openapi.v1";
 export * from "./http/router.v1";
