@@ -18,11 +18,11 @@ import {
   Briefcase,
   CreditCard,
   Github,
-  Handshake,
   LayoutDashboard,
   Shield,
   Vote,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -53,7 +53,7 @@ const NAV_ITEMS = [
 
 const EXTERNAL_LINKS = [
   {
-    href: "https://github.com/cogni-test-org/brother",
+    href: "https://github.com/cogni-DAO/cogni-template",
     label: "GitHub",
     icon: Github,
   },
@@ -90,16 +90,18 @@ export function AppSidebar(): ReactElement {
       <SidebarHeader className="h-16 shrink-0 justify-center">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild tooltip="cogni/brother">
+            <SidebarMenuButton size="lg" asChild tooltip="Cogni">
               <Link href="/chat">
                 <div className="flex aspect-square size-8 items-center justify-center">
-                  <Handshake
-                    aria-hidden="true"
-                    className="size-5 text-primary"
+                  <Image
+                    src="/TransparentBrainOnly.png"
+                    alt="Cogni"
+                    width={24}
+                    height={24}
                   />
                 </div>
                 <span className="truncate font-bold text-gradient-accent">
-                  cogni/brother
+                  Cogni
                 </span>
               </Link>
             </SidebarMenuButton>
